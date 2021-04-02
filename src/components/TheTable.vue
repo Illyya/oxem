@@ -12,7 +12,7 @@
 
     <tbody class="table__tbody">
       <tr
-        v-for="row in dataTable()"
+        v-for="row in paginatedTable"
         :key="row.phone"
         @click="additionalInformation(row)"
         class="table__tr"
@@ -45,20 +45,30 @@ export default {
     sortTable(sortParam) {
       this.$store.commit("sortTable", sortParam);
     },
-    dataTable() {
-      const start = (this.currentPage - 1) * 50;
-      const end = this.currentPage * 50;
-
-      const filteredTable = this.$store.getters.filterDataTable(
-        this.inputSearchFilter
-      );
-
-      this.$emit("numberOfLinesVal", filteredTable.length);
-
-      this.$emit("hasNextPageVal", filteredTable.length > end);
-
-      return filteredTable.slice(start, end);
+  },
+  computed: {
+    startIndex() {
+      return (this.currentPage - 1) * 50;
     },
+    endIndex() {
+      return this.currentPage * 50;
+    },
+    filteredTable() {
+      return this.$store.getters.filterDataTable(this.inputSearchFilter);
+    },
+    paginatedTable() {
+      return this.filteredTable.slice(this.startIndex, this.endIndex);
+    }
+  },
+  watch: {
+    filteredTable() {
+      this.$emit("numberOfLinesVal", this.filteredTable.length);
+
+      this.$emit("hasNextPageVal", this.filteredTable.length > this.endIndex);
+    },
+    currentPage() {
+      this.$emit("hasNextPageVal", this.filteredTable.length > this.endIndex);
+    }
   },
 };
 </script>

@@ -86,7 +86,7 @@ export default {
     return {
       inputSearchFilter: "",
       currentPage: 1,
-      hasNextPage: true,
+      hasNextPage: false,
       numberOfLines: null,
       showAdditionalInformation: {
         userSelected: "",
@@ -117,6 +117,8 @@ export default {
       this.isVisiblePreloader = true;
       this.currentPage = 1;
 
+      this.deletionAdditionalInformation();
+
       this.$store
         .dispatch("tableDataQuery", amountOfInformation)
         .then(() => (this.isVisiblePreloader = false));
@@ -133,12 +135,24 @@ export default {
       this.showAdditionalInformation.zip = row.address.zip;
     },
     valueAssignmentSearch(inputSearchFilter) {
-      this.inputSearchFilter = inputSearchFilter;
+      this.inputSearchFilter = inputSearchFilter;      
     },
+    deletionAdditionalInformation() {
+      this.showAdditionalInformation = {
+        userSelected: "",
+        description: "",
+        streetAddress: "",
+        city: "",
+        state: "",
+        zip: "",
+      };
+    }
   },
   watch: {
     inputSearchFilter() {
       this.currentPage = 1;
+
+      this.deletionAdditionalInformation();
     },
   },
 };
